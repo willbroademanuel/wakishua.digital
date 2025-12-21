@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wakishua Digital</title>
+    
+    <!-- Fonts: Space Grotesk for a modern, digital agency look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons: FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#050505',
+                            dark: '#0a0a0a',
+                            grey: '#1a1a1a',
+                            light: '#d4d4d4',
+                            white: '#ffffff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'blob': 'blob 7s infinite',
+                        'fade-up': 'fadeUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { textShadow: '0 0 5px rgba(255,255,255,0.1)' },
+                            '100%': { textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 10px rgba(255,255,255,0.6)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        },
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 26, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            background: rgba(26, 26, 26, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Intro Screen Styles */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out;
+        }
+
+        .intro-text {
+            font-size: 2rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .visible {
+            opacity: 1;
+        }
+
+        .hidden-screen {
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* Language Buttons */
+        .lang-btn {
+            position: relative;
+            padding: 15px 40px;
+            margin: 10px;
+            background: transparent;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .lang-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .lang-btn:hover::before {
+            left: 100%;
+        }
+
+        .lang-btn:hover {
+            border-color: #fff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+
+        #main-content {
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            position: relative;
+        }
+
+        /* Nav Link Hover Effect */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: 0;
+            left: 50%;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Tabs Styles */
+        .tab-btn {
+            position: relative;
+            padding-bottom: 10px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #fff;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #fff;
+            transition: width 0.3s ease;
+        }
+        .tab-btn.active::after {
+            width: 100%;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- INTRO & LANGUAGE SELECTION OVERLAY -->
+    <div id="intro-overlay">
+        <!-- Step 1: Language Selection -->
+        <div id="language-selection" class="flex flex-col items-center z-10">
+            <div class="mb-8 text-brand-light text-sm tracking-widest uppercase opacity-70">Select Language / Chagua Lugha</div>
+            <div class="flex flex-col sm:flex-row gap-6">
+                <button class="lang-btn" onclick="startExperience('sw')">Kiswahili</button>
+                <button class="lang-btn" onclick="startExperience('en')">English</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Animated Text Container (Hidden initially) -->
+        <div id="intro-sequence" class="hidden absolute inset-0 flex items-center justify-center z-10">
+            <h1 id="sequence-text" class="intro-text text-3xl md:text-5xl text-white tracking-tighter"></h1>
+        </div>
+    </div>
+
+    <!-- MAIN WEBSITE CONTENT (Hidden initially) -->
+    <div id="main-content">
+
+        <!-- DYNAMIC BACKGROUND ELEMENTS -->
+        <!-- Blurred orbs that move gently in background -->
+        <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-gray-800 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob"></div>
+            <div class="absolute top-1/2 right-1/4 w-96 h-96 bg-gray-700 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob" style="animation-delay: 2s"></div>
+            <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-gray-900 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob" style="animation-delay: 4s"></div>
+            <!-- Interactive follower blob -->
+            <div id="mouse-blob" class="absolute w-[400px] h-[400px] bg-white rounded-full mix-blend-overlay filter blur-[120px] opacity-5 transition-transform duration-1000 ease-out" style="top: -200px; left: -200px;"></div>
+        </div>
+        
+        <!-- Navbar -->
+        <nav class="glass-nav fixed w-full z-40 top-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <!-- Logo Area -->
+                    <div class="flex-shrink-0 flex items-center gap-3">
+                        <div class="h-10 w-10 border border-white/20 rounded-full flex items-center justify-center overflow-hidden bg-brand-grey transition-transform hover:rotate-12">
+                            <img src="assets/logo.jpeg" alt="Wakishua Logo" class="object-cover h-full w-full" id="nav-logo">
+                        </div>
+                        <span class="font-bold text-xl tracking-tight cursor-default">WAKISHUA DIGITAL</span>
+                    </div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-8">
+                            <a href="#services" class="nav-link text-sm font-medium transition-colors text-gray-300 hover:text-white px-1 py-2" data-key="nav_services">Services</a>
+                            <a href="#about" class="nav-link text-sm font-medium transition-colors text-gray-300 hover:text-white px-1 py-2" data-key="nav_about">About</a>
+                            <a href="#contact" class="px-6 py-2 rounded-full text-sm font-bold bg-white text-black hover:bg-gray-200 transition-all transform hover:scale-105" data-key="nav_contact">Contact Us</a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <div class="-mr-2 flex md:hidden">
+                        <button onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white focus:outline-none">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="md:hidden hidden bg-black/95 backdrop-blur-xl border-b border-gray-800 absolute w-full" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#services" class="block px-3 py-4 text-lg font-medium border-b border-gray-800" data-key="nav_services">Services</a>
+                    <a href="#about" class="block px-3 py-4 text-lg font-medium border-b border-gray-800" data-key="nav_about">About</a>
+                    <a href="#contact" class="block px-3 py-4 text-lg font-medium bg-white text-black mt-4 text-center rounded-lg" data-key="nav_contact">Contact Us</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="min-h-screen flex items-center justify-center pt-20 px-4 relative z-10">
+            <div class="max-w-4xl mx-auto text-center reveal active">
+                <p class="text-brand-light text-sm md:text-base tracking-[0.3em] uppercase mb-6 opacity-70" data-key="hero_sub">Digital Agency</p>
+                <h1 class="text-5xl md:text-7xl lg:text-9xl font-bold mb-8 leading-tight tracking-tighter mix-blend-difference">
+                    <span data-key="hero_title_1">We Craft</span><br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-600" data-key="hero_title_2">Digital Excellence.</span>
+                </h1>
+                <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed" data-key="hero_desc">
+                    Minimalist strategies for maximum impact. We build brands that stand the test of time.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-6">
+                    <a href="#contact" class="group relative px-8 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:pr-10" data-key="cta_start">
+                        <span class="relative z-10">Start Project</span>
+                        <div class="absolute inset-0 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                        <i class="fas fa-arrow-right absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all z-10 text-xs"></i>
+                    </a>
+                    <a href="#services" class="px-8 py-4 border border-white/10 text-white font-medium rounded-full hover:bg-white/5 hover:border-white/30 transition-all backdrop-blur-sm" data-key="cta_services">View Services</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-24 relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                    <div>
+                        <h2 class="text-4xl md:text-6xl font-bold mb-2 tracking-tighter" data-key="services_title">Our Expertise</h2>
+                        <div class="h-1 w-20 bg-white"></div>
+                    </div>
+                    <p class="text-gray-400 max-w-sm mt-6 md:mt-0 text-right md:text-left">Solving problems with clarity and simplicity.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Service 1 -->
+                    <div class="glass-card p-8 rounded-2xl reveal hover:z-20">
+                        <div class="h-12 w-12 bg-white/10 text-white rounded-full flex items-center justify-center mb-6 text-xl backdrop-blur-md">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-key="serv_1_title">Web Development</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed" data-key="serv_1_desc">Custom websites that are fast, responsive, and SEO-optimized.</p>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="glass-card p-8 rounded-2xl reveal" style="transition-delay: 100ms">
+                        <div class="h-12 w-12 bg-white/10 text-white rounded-full flex items-center justify-center mb-6 text-xl backdrop-blur-md">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-key="serv_2_title">Digital Marketing</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed" data-key="serv_2_desc">Social media management and ad campaigns that convert.</p>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="glass-card p-8 rounded-2xl reveal" style="transition-delay: 200ms">
+                        <div class="h-12 w-12 bg-white/10 text-white rounded-full flex items-center justify-center mb-6 text-xl backdrop-blur-md">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-key="serv_3_title">Branding</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed" data-key="serv_3_desc">Logo design and brand identity that tells your story.</p>
+                    </div>
+                     <!-- Service 4 -->
+                     <div class="glass-card p-8 rounded-2xl reveal" style="transition-delay: 300ms">
+                        <div class="h-12 w-12 bg-white/10 text-white rounded-full flex items-center justify-center mb-6 text-xl backdrop-blur-md">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-key="serv_4_title">SEO Optimization</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed" data-key="serv_4_desc">Ranking your business on the first page of search results.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Minimalist Interactive About Tabs Section -->
+        <section id="about" class="py-24 relative z-10">
+            <div class="max-w-6xl mx-auto px-4 reveal">
+                <div class="glass-card rounded-3xl p-8 md:p-16 border border-white/5 bg-black/40">
+                    <div class="flex flex-col md:flex-row gap-12">
+                        <!-- Left: Tab Headers -->
+                        <div class="w-full md:w-1/3 border-r border-white/10 pr-0 md:pr-12 space-y-8">
+                            <h2 class="text-3xl font-bold mb-8">About Us</h2>
+                            <div class="flex flex-col items-start gap-6">
+                                <button onclick="switchTab('mission')" id="btn-mission" class="tab-btn active text-xl uppercase tracking-widest font-light">Mission</button>
+                                <button onclick="switchTab('vision')" id="btn-vision" class="tab-btn text-xl uppercase tracking-widest font-light">Vision</button>
+                                <button onclick="switchTab('why')" id="btn-why" class="tab-btn text-xl uppercase tracking-widest font-light">Why Us</button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Tab Content -->
+                        <div class="w-full md:w-2/3 pt-4 min-h-[200px]">
+                            <!-- Mission Content -->
+                            <div id="content-mission" class="tab-content active">
+                                <h3 class="text-2xl text-white mb-6" data-key="about_mission_title">Our Mission</h3>
+                                <p class="text-gray-400 text-lg leading-relaxed font-light" data-key="about_mission_desc">
+                                    To empower businesses across Africa with minimalist, high-impact digital solutions that cut through the noise. We believe in the power of simplicity to drive complex growth.
+                                </p>
+                            </div>
+                            <!-- Vision Content -->
+                            <div id="content-vision" class="tab-content">
+                                <h3 class="text-2xl text-white mb-6" data-key="about_vision_title">Our Vision</h3>
+                                <p class="text-gray-400 text-lg leading-relaxed font-light" data-key="about_vision_desc">
+                                    To be the bridge between Tanzanian innovation and the global digital stage, creating brands that are recognized worldwide for their elegance and effectiveness.
+                                </p>
+                            </div>
+                            <!-- Why Us Content -->
+                            <div id="content-why" class="tab-content">
+                                <h3 class="text-2xl text-white mb-6" data-key="about_why_title">Why Choose Us</h3>
+                                <ul class="space-y-4 text-gray-400 font-light">
+                                    <li class="flex items-center gap-3">
+                                        <i class="fas fa-check text-white text-xs border border-white rounded-full p-1"></i>
+                                        <span data-key="about_why_1">Data-driven strategies</span>
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <i class="fas fa-check text-white text-xs border border-white rounded-full p-1"></i>
+                                        <span data-key="about_why_2">Minimalist, future-proof design</span>
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <i class="fas fa-check text-white text-xs border border-white rounded-full p-1"></i>
+                                        <span data-key="about_why_3">24/7 Local support</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 px-4 relative z-10">
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center reveal">
+                
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter" data-key="contact_title">Let's Work Together</h2>
+                    <p class="text-gray-400 mb-8 text-lg font-light" data-key="contact_desc">Ready to take your brand to the next level? Reach out to us.</p>
+                    
+                    <div class="space-y-6">
+                        <a href="tel:+255788129212" class="flex items-center gap-4 text-xl hover:text-white text-gray-400 transition-colors group">
+                            <div class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                                <i class="fas fa-phone-alt text-sm"></i>
+                            </div>
+                            <span class="font-mono text-sm md:text-lg">+255 788 129 212</span>
+                        </a>
+                        <a href="mailto:info@wakishua.digital" class="flex items-center gap-4 text-xl hover:text-white text-gray-400 transition-colors group">
+                            <div class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <span class="font-mono text-sm md:text-lg">info@wakishua.digital</span>
+                        </a>
+                        <div class="flex items-center gap-4 text-xl text-gray-400 group">
+                            <div class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-sm"></i>
+                            </div>
+                            <span class="font-mono text-sm md:text-lg" data-key="location">Dar es Salaam, Tanzania</span>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    <div class="mt-12 flex gap-6">
+                        <a href="https://instagram.com/wakishua.digital" target="_blank" class="h-12 w-12 border border-gray-700 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-all transform hover:-translate-y-1">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="h-12 w-12 border border-gray-700 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-all transform hover:-translate-y-1">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="h-12 w-12 border border-gray-700 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-all transform hover:-translate-y-1">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Simple Contact Form Mockup -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <form onsubmit="event.preventDefault(); alert('Thank you! This is a demo form.');">
+                        <div class="mb-6 relative group">
+                            <input type="text" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" ">
+                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_name">Name</label>
+                        </div>
+                        <div class="mb-6 relative group">
+                            <input type="email" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" ">
+                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_email">Email</label>
+                        </div>
+                        <div class="mb-8 relative group">
+                            <textarea rows="3" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" "></textarea>
+                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_message">Message</label>
+                        </div>
+                        <button class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-gray-200 transition-all uppercase tracking-widest text-sm relative overflow-hidden group" data-key="form_send">
+                            <span class="relative z-10">Send Message</span>
+                            <div class="absolute inset-0 bg-gray-300 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="border-t border-gray-900 py-8 text-center text-gray-600 text-sm relative z-10 bg-black">
+            <p>&copy; 2024 Wakishua Digital. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Translations Database
+        const translations = {
+            en: {
+                nav_services: "Services",
+                nav_about: "About",
+                nav_contact: "Contact Us",
+                hero_sub: "Digital Agency",
+                hero_title_1: "We Craft",
+                hero_title_2: "Digital Excellence.",
+                hero_desc: "Minimalist strategies for maximum impact. We build brands that stand the test of time.",
+                cta_start: "Start Project",
+                cta_services: "View Services",
+                services_title: "Our Expertise",
+                serv_1_title: "Web Development",
+                serv_1_desc: "Custom websites that are fast, responsive, and SEO-optimized.",
+                serv_2_title: "Digital Marketing",
+                serv_2_desc: "Social media management and ad campaigns that convert.",
+                serv_3_title: "Branding",
+                serv_3_desc: "Logo design and brand identity that tells your story.",
+                serv_4_title: "SEO Optimization",
+                serv_4_desc: "Ranking your business on the first page of search results.",
+                contact_title: "Let's Work Together",
+                contact_desc: "Ready to take your brand to the next level? Reach out to us.",
+                location: "Dar es Salaam, Tanzania",
+                form_name: "Name",
+                form_email: "Email",
+                form_message: "Message",
+                form_send: "Send Message",
+                // About Section
+                about_mission_title: "Our Mission",
+                about_mission_desc: "To empower businesses across Africa with minimalist, high-impact digital solutions that cut through the noise. We believe in the power of simplicity to drive complex growth.",
+                about_vision_title: "Our Vision",
+                about_vision_desc: "To be the bridge between Tanzanian innovation and the global digital stage, creating brands that are recognized worldwide for their elegance and effectiveness.",
+                about_why_title: "Why Choose Us",
+                about_why_1: "Data-driven strategies",
+                about_why_2: "Minimalist, future-proof design",
+                about_why_3: "24/7 Local support",
+                // Intro Texts
+                intro_welcome: "Welcome",
+                intro_brand: "Wakishua.digital",
+                intro_confirm: "You are in the right place"
+            },
+            sw: {
+                nav_services: "Huduma",
+                nav_about: "Kuhusu Sisi",
+                nav_contact: "Wasiliana",
+                hero_sub: "Wakala wa Kidijitali",
+                hero_title_1: "Tunatengeneza",
+                hero_title_2: "Ubora wa Kidijitali.",
+                hero_desc: "Mkakati rahisi kwa matokeo makubwa. Tunajenga chapa zinazodumu.",
+                cta_start: "Anza Mradi",
+                cta_services: "Ona Huduma",
+                services_title: "Utaalam Wetu",
+                serv_1_title: "Ubunifu wa Tovuti",
+                serv_1_desc: "Tovuti maalum zenye kasi, na zilizoboreshwa kwa SEO.",
+                serv_2_title: "Masoko ya Dijitali",
+                serv_2_desc: "Usimamizi wa mitandao ya kijamii na matangazo yanayoleta wateja.",
+                serv_3_title: "Chapa (Branding)",
+                serv_3_desc: "Ubunifu wa nembo na utambulisho wa chapa yako.",
+                serv_4_title: "Kuboresha SEO",
+                serv_4_desc: "Kuweka biashara yako ukurasa wa kwanza wa matokeo ya utafutaji.",
+                contact_title: "Tufanye Kazi Pamoja",
+                contact_desc: "Uko tayari kupeleka biashara yako ngazi nyingine? Wasiliana nasi.",
+                location: "Dar es Salaam, Tanzania",
+                form_name: "Jina",
+                form_email: "Barua Pepe",
+                form_message: "Ujumbe",
+                form_send: "Tuma Ujumbe",
+                 // About Section
+                 about_mission_title: "Dhumuni Letu",
+                about_mission_desc: "Kuwezesha biashara barani Afrika na suluhisho rahisi za kidijitali. Tunaamini katika nguvu ya urahisi ili kukuza biashara.",
+                about_vision_title: "Maono Yetu",
+                about_vision_desc: "Kuwa daraja kati ya ubunifu wa Kitanzania na ulimwengu wa kidijitali, tukitengeneza chapa zinazotambulika duniani kote.",
+                about_why_title: "Kwa Nini Sisi",
+                about_why_1: "Mikakati inayotegemea data",
+                about_why_2: "Ubunifu wa kisasa na rahisi",
+                about_why_3: "Msaada wa karibu 24/7",
+                // Intro Texts
+                intro_welcome: "Karibu",
+                intro_brand: "Wakishua.digital",
+                intro_confirm: "Upo mahali sahihi"
+            }
+        };
+
+        let currentLang = 'en';
+
+        // Helper function for delays
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function startExperience(lang) {
+            currentLang = lang;
+            
+            // 1. Hide Language Selection
+            const langScreen = document.getElementById('language-selection');
+            langScreen.style.opacity = '0';
+            await sleep(500);
+            langScreen.style.display = 'none';
+
+            // 2. Start Intro Sequence
+            const introContainer = document.getElementById('intro-sequence');
+            const textElement = document.getElementById('sequence-text');
+            introContainer.classList.remove('hidden');
+
+            const t = translations[lang];
+
+            // Sequence 1: Welcome / Karibu
+            textElement.textContent = t.intro_welcome;
+            textElement.classList.add('visible');
+            await sleep(1500);
+            textElement.classList.remove('visible');
+            await sleep(600);
+
+            // Sequence 2: Brand Name
+            textElement.textContent = t.intro_brand;
+            textElement.classList.add('visible');
+            await sleep(1500);
+            textElement.classList.remove('visible');
+            await sleep(600);
+
+            // Sequence 3: Glowing Confirmation
+            textElement.textContent = t.intro_confirm;
+            textElement.classList.add('animate-glow'); // Add glowing effect class
+            textElement.classList.add('visible');
+            await sleep(2500);
+            textElement.classList.remove('visible');
+            textElement.classList.remove('animate-glow');
+            await sleep(800);
+
+            // 3. Remove Overlay and Show Website
+            const overlay = document.getElementById('intro-overlay');
+            overlay.classList.add('hidden-screen');
+            
+            // Translate the main site content
+            applyTranslations(lang);
+
+            // Reveal Content
+            const mainContent = document.getElementById('main-content');
+            mainContent.style.opacity = '1';
+        }
+
+        function applyTranslations(lang) {
+            const elements = document.querySelectorAll('[data-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Remove active class from all buttons and content
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked button and corresponding content
+            document.getElementById(`btn-${tabId}`).classList.add('active');
+            document.getElementById(`content-${tabId}`).classList.add('active');
+        }
+
+        // Scroll Observer for Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Background Mouse Follower Logic
+        const mouseBlob = document.getElementById('mouse-blob');
+        
+        document.addEventListener('mousemove', (e) => {
+            // Move the blob with a slight delay/smoothness
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Using requestAnimationFrame for performance
+            requestAnimationFrame(() => {
+                mouseBlob.style.transform = `translate(${x - 200}px, ${y - 200}px)`;
+            });
+        });
+
+    </script>
+</body>
+</html>
