@@ -241,6 +241,19 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Glitch/Text scramble animation for tab transitions */
+        @keyframes textGlitch {
+            0% { opacity: 1; transform: translateX(0); }
+            20% { opacity: 0.8; transform: translateX(-2px); }
+            40% { opacity: 1; transform: translateX(2px); }
+            60% { opacity: 0.8; transform: translateX(-2px); }
+            80% { opacity: 1; transform: translateX(2px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .glitch-effect {
+            animation: textGlitch 0.8s;
+        }
     </style>
 </head>
 <body>
@@ -457,6 +470,12 @@
                             </div>
                             <span class="font-mono text-sm md:text-lg">+255 788 129 212</span>
                         </a>
+                        <a href="https://wa.me/255788129212" target="_blank" class="flex items-center gap-4 text-xl hover:text-white text-gray-400 transition-colors group">
+                            <div class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                                <i class="fab fa-whatsapp text-sm"></i>
+                            </div>
+                            <span class="font-mono text-sm md:text-lg">+255 788 129 212</span>
+                        </a>
                         <a href="mailto:info@wakishua.digital" class="flex items-center gap-4 text-xl hover:text-white text-gray-400 transition-colors group">
                             <div class="w-10 h-10 border border-gray-700 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
                                 <i class="fas fa-envelope text-sm"></i>
@@ -485,27 +504,6 @@
                     </div>
                 </div>
 
-                <!-- Simple Contact Form Mockup -->
-                <div class="glass-card p-8 rounded-2xl">
-                    <form onsubmit="event.preventDefault(); alert('Thank you! This is a demo form.');">
-                        <div class="mb-6 relative group">
-                            <input type="text" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" ">
-                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_name">Name</label>
-                        </div>
-                        <div class="mb-6 relative group">
-                            <input type="email" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" ">
-                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_email">Email</label>
-                        </div>
-                        <div class="mb-8 relative group">
-                            <textarea rows="3" required class="w-full bg-transparent border-b border-gray-700 py-3 text-white focus:outline-none focus:border-white transition-colors peer" placeholder=" "></textarea>
-                            <label class="absolute left-0 top-3 text-gray-500 text-sm transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-base pointer-events-none uppercase tracking-wider" data-key="form_message">Message</label>
-                        </div>
-                        <button class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-gray-200 transition-all uppercase tracking-widest text-sm relative overflow-hidden group" data-key="form_send">
-                            <span class="relative z-10">Send Message</span>
-                            <div class="absolute inset-0 bg-gray-300 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                        </button>
-                    </form>
-                </div>
 
             </div>
         </section>
@@ -680,8 +678,52 @@
 
             // Add active class to clicked button and corresponding content
             document.getElementById(`btn-${tabId}`).classList.add('active');
-            document.getElementById(`content-${tabId}`).classList.add('active');
+            const newContent = document.getElementById(`content-${tabId}`);
+            newContent.classList.add('active');
+
+            // apply glitch animation class and remove it after animation ends
+            newContent.classList.add('glitch-effect');
+            newContent.addEventListener('animationend', () => {
+                newContent.classList.remove('glitch-effect');
+            }, { once: true });
         }
+
+        // Automatic Tab Rotation
+        const tabOrder = ['mission', 'vision', 'why'];
+        let currentTabIndex = 0;
+        let tabInterval = null;
+
+        function rotateTabs() {
+            currentTabIndex = (currentTabIndex + 1) % tabOrder.length;
+            switchTab(tabOrder[currentTabIndex]);
+        }
+
+        function startTabAutoSwitch() {
+            // clear any existing interval to avoid duplicates
+            if (tabInterval) clearInterval(tabInterval);
+            tabInterval = setInterval(rotateTabs, 6000); // changed to 6 seconds
+        }
+
+        function resetTabTimer() {
+            // restart the auto switch timer after user interaction
+            currentTabIndex = tabOrder.indexOf(
+                document.querySelector('.tab-btn.active').id.replace('btn-', '')
+            );
+            startTabAutoSwitch();
+        }
+
+        // attach click listeners to reset timer when the user manually switches
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.id.replace('btn-', ''));
+                resetTabTimer();
+            });
+        });
+
+        // begin automatic rotation once the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            startTabAutoSwitch();
+        });
 
         // Scroll Observer for Animations
         const observerOptions = {
