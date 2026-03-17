@@ -181,7 +181,7 @@
 <body class="pt-24">
 
     <div id="page-transition">
-        <div class="brand-text" id="transition-text">WATU LAB</div>
+        <div class="brand-text show" id="transition-text">WATU LAB</div>
     </div>
 
     <nav class="glass-nav fixed w-full z-40 top-0">
@@ -484,7 +484,7 @@
 
             if (pageTransition && transitionText) {
                 // Initial Page Load (Fade Out overlay) - Added here since it was missing
-                transitionText.classList.add('show');
+                
 
                 setTimeout(() => {
                     transitionText.classList.remove('show');
