@@ -369,7 +369,7 @@
 <body>
 
     <div id="page-transition">
-        <div class="brand-text" id="transition-text">WATU LAB</div>
+        <div class="brand-text show" id="transition-text">WATU LAB</div>
     </div>
 
     <div id="intro-overlay">
@@ -1190,8 +1190,7 @@
             }
 
             // 1. Initial Page Load (Fade Out overlay)
-            // Show the Watu Lab text briefly before fading out
-            transitionText.classList.add('show');
+            
 
             setTimeout(() => {
                 transitionText.classList.remove('show');
